@@ -1,0 +1,14 @@
+{
+  "name": "starvault-web",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "dompurify": "^3.1.2",
+    "express": "^4.19.2",
+    "jsdom": "^22.1.0"
+  }
+}

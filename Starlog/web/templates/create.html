@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Compose - Starlog{% endblock %}
+{% block section_title %}create broadcast{% endblock %}
+{% block content %}
+<form method="POST" action="{{ url_for('create') }}" class="form-stack">
+    <label for="title">Broadcast title</label>
+    <input id="title" type="text" name="title" placeholder="Docking Log" value="{{ draft_title }}" required>
+
+    <label for="content">Broadcast body source</label>
+    <textarea id="content" name="content" rows="8" placeholder="<p>Thrusters stable. Cargo sealed.</p>">{{ draft_content }}</textarea>
+
+    <div class="broadcast-actions">
+        <button type="submit">Save Broadcast</button>
+        <a href="{{ url_for('index') }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

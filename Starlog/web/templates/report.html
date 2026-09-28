@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Report - Starlog{% endblock %}
+{% block section_title %}report broadcast{% endblock %}
+{% block content %}
+<form method="POST" action="{{ submit_url }}" class="form-stack{% if report_result %} hidden{% endif %}">
+    <p class="report-context">Target: {{ report_title }}</p>
+    <p class="report-context">This sends the broadcast to the station bot.</p>
+
+    <div class="broadcast-actions">
+        <button type="submit">Submit Report</button>
+        <a href="{{ cancel_url }}">Cancel</a>
+    </div>
+</form>
+
+<div class="report-result{% if not report_result %} hidden{% endif %}">
+    <h3>{% if report_result == 'success' %}Report Submitted{% else %}Report Rejected{% endif %}</h3>
+    <p>{{ report_message if report_message else 'No response was returned from the station bot.' }}</p>
+    <div class="broadcast-actions">
+        <a href="{{ cancel_url }}">Back To Broadcast</a>
+    </div>
+</div>
+{% endblock %}

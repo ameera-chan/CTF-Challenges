@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a13">
+  <title>Hunter% — Hunter Log</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #172018;
+      --muted: #687269;
+      --paper: #fffdf8;
+      --paper-soft: #f2f0e8;
+      --forest: #183c2a;
+      --forest-bright: #276343;
+      --moss: #b9d39f;
+      --line: rgba(23, 32, 24, 0.16);
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: #f6f2e8;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(91, 126, 80, 0.18), transparent 26rem),
+        radial-gradient(circle at 82% 22%, rgba(129, 83, 48, 0.13), transparent 24rem),
+        #101a13;
+      font-family: var(--sans);
+    }
+
+    .site-shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav-link--secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 120px;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 4px;
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 160ms ease, opacity 160ms ease;
+      background: rgba(255, 255, 255, 0.05);
+      color: #dce9ca;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link--secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .results {
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(23, 32, 24, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 32, 24, 0.035) 1px, transparent 1px),
+        var(--paper-soft);
+      background-size: 32px 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      min-height: calc(100vh - 80px);
+      /* Stretches the section to the bottom */
+    }
+
+    .results__inner {
+      max-width: 1000px;
+      padding: 60px 0 110px;
+    }
+
+    .results__header {
+      display: flex;
+      align-items: fill;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 38px;
+    }
+
+    .results__kicker {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .boar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .boar-card {
+      overflow: hidden;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid rgba(23, 32, 24, 0.25);
+      box-shadow: 10px 10px 0 rgba(24, 60, 42, 0.12);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+      border-radius: 4px;
+    }
+
+    .boar-card:hover {
+      box-shadow: 14px 14px 0 rgba(24, 60, 42, 0.16);
+      transform: translate(-3px, -3px);
+    }
+
+    .boar-card__header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      min-height: 64px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .boar-card__header h3 {
+      margin: 0;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: clamp(1rem, 2.1vw, 1.25rem);
+      letter-spacing: -0.02em;
+    }
+
+    .boar-card__id {
+      color: #6f776f;
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+
+    .boar-card__image {
+      display: grid;
+      min-height: 250px;
+      padding: 24px;
+      place-items: center;
+      background: radial-gradient(circle at 50% 70%, var(--glow), transparent 43%), #fbfaf6;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .boar-svg {
+      width: min(100%, 460px);
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 18px 13px rgba(23, 32, 24, 0.13));
+    }
+
+    .boar-photo {
+      width: 100%;
+      max-width: 460px;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid rgba(23, 32, 24, 0.18);
+      box-shadow: 0 12px 18px rgba(23, 32, 24, 0.16);
+    }
+
+    .boar-svg .ground {
+      fill: rgba(23, 32, 24, 0.1);
+    }
+
+    .boar-svg .fur {
+      fill: var(--fur);
+      stroke: var(--fur-dark);
+      stroke-width: 5;
+      stroke-linejoin: round;
+    }
+
+    .boar-svg .fur-dark {
+      fill: var(--fur-dark);
+    }
+
+    .boar-svg .bristles {
+      fill: none;
+      stroke: var(--fur-dark);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .boar-svg .muzzle {
+      fill: var(--muzzle);
+      stroke: var(--fur-dark);
+      stroke-width: 4;
+    }
+
+    .boar-svg .tusk {
+      fill: #fff1c9;
+      stroke: #9b865c;
+      stroke-width: 3;
+    }
+
+    .boar-svg .eye,
+    .boar-svg .nostril {
+      fill: #111713;
+    }
+
+    .boar-svg .highlight {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.22);
+      stroke-width: 6;
+      stroke-linecap: round;
+    }
+
+    .stats {
+      padding: 16px 24px 20px;
+    }
+
+    .stats__row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(120px, 1fr);
+      align-items: center;
+      min-height: 40px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stats__row:last-child {
+      border-bottom: 0;
+    }
+
+    .stats__row--head {
+      min-height: 44px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .stats dt,
+    .stats dd {
+      margin: 0;
+    }
+
+    .stats dt {
+      font-weight: 600;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+    }
+
+    .stats dd {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+    }
+
+    .stat-value {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .boar-card--forest {
+      --accent: #367a47;
+      --fur: #7b5439;
+      --fur-dark: #3e2b21;
+      --muzzle: #9e7860;
+      --glow: rgba(118, 158, 93, 0.23);
+    }
+
+    .boar-card--mud {
+      --accent: #94622d;
+      --fur: #6a5141;
+      --fur-dark: #302821;
+      --muzzle: #8b7162;
+      --glow: rgba(153, 111, 68, 0.22);
+    }
+
+    .boar-card--iron {
+      --accent: #4f6f82;
+      --fur: #5f6562;
+      --fur-dark: #292e2d;
+      --muzzle: #7d8580;
+      --glow: rgba(80, 112, 130, 0.2);
+    }
+
+    .boar-card--thorn {
+      --accent: #9c4936;
+      --fur: #735142;
+      --fur-dark: #362720;
+      --muzzle: #987466;
+      --glow: rgba(156, 73, 54, 0.2);
+    }
+
+    .results__message {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: 24px;
+      border: 1px solid rgba(23, 32, 24, 0.25);
+      border-radius: 4px;
+      color: #6e3429;
+      background: var(--paper);
+      font-family: var(--sans);
+      font-weight: 500;
+    }
+
+    .variant-leaf {
+      fill: #57804f;
+      stroke: #315038;
+      stroke-width: 3;
+    }
+
+    .variant-mud {
+      fill: #664530;
+      opacity: 0.72;
+    }
+
+    .variant-plate {
+      fill: #728081;
+      stroke: #3b4647;
+      stroke-width: 4;
+    }
+
+    .variant-thorn {
+      fill: #8b3e2f;
+      stroke: #4e291f;
+      stroke-width: 3;
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .boar-card {
+      animation: reveal 420ms both;
+    }
+
+    .boar-card:nth-child(2) {
+      animation-delay: 70ms;
+    }
+
+    .boar-card:nth-child(3) {
+      animation-delay: 140ms;
+    }
+
+    .boar-card:nth-child(4) {
+      animation-delay: 210ms;
+    }
+
+    @media (max-width: 780px) {
+      .site-shell {
+        width: min(100% - 24px, 590px);
+      }
+
+      .boar-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .results__inner {
+        padding: 40px 0 82px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="boar-base" viewBox="0 0 600 330">
+        <ellipse class="ground" cx="310" cy="293" rx="225" ry="20" />
+        <path class="bristles"
+          d="M120 123 145 86 168 112 195 69 218 106 250 60 274 103 309 61 329 106 366 73 380 116" />
+        <path class="fur"
+          d="M114 140c28-60 111-80 215-55 48 12 83 33 103 65 20 32 20 75-7 103-35 36-94 42-179 35-66-6-123-23-146-66-13-25-6-58 14-82Z" />
+        <path class="fur"
+          d="M385 143c25-31 69-35 105-13 35 22 49 68 26 100-17 24-53 30-86 21-29-8-52-29-58-55-5-20 0-38 13-53Z" />
+        <path class="fur-dark" d="m417 137 11-58 44 54Z" />
+        <path class="fur" d="M497 172c27-2 58 14 73 35-19 22-50 30-79 25-17-3-29-14-30-28-2-16 12-29 36-32Z" />
+        <ellipse class="muzzle" cx="540" cy="208" rx="43" ry="27" />
+        <ellipse class="nostril" cx="558" cy="207" rx="6" ry="8" />
+        <circle class="eye" cx="472" cy="163" r="7" />
+        <path class="tusk" d="M506 226c9 1 24-5 35-18-1 24-13 41-30 39-7-1-10-10-5-21Z" />
+        <path class="fur" d="M164 246h45l-8 62h-45Z" />
+        <path class="fur" d="M337 251h45l13 57h-47Z" />
+        <path class="fur-dark" d="M153 304h51l-4 15h-49Z" />
+        <path class="fur-dark" d="M346 304h51l4 15h-53Z" />
+        <path class="fur-dark" d="M111 156c-30-4-54 4-66 23 12-4 22-2 29 6-13 5-20 16-20 31 14-16 31-20 50-12Z" />
+        <path class="highlight" d="M146 142c49-41 135-43 209-18" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <div style="padding: 20px 0;" class="site-shell">
+    <a href="/" class="nav-link--secondary">← Back</a>
+  </div>
+
+  <section class="results">
+    <div class="results__inner site-shell">
+      <div class="results__header">
+        <div>
+          <h2 class="results__kicker">Hunter Log</h2>
+        </div>
+      </div>
+      <div class="boar-grid" id="boar-grid">
+        <p style="color: var(--muted); font-family: var(--sans);">Loading public records...</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const a0_0x5d57d9 = a0_0x2fad, a0_0x3957bf = a0_0x2fad; (function (_0x5dd9e, _0x293767) { const _0x4fab44 = a0_0x2fad, _0x3c2c21 = a0_0x2fad, _0x2aeca1 = _0x5dd9e(); while (!![]) { try { const _0x3d049a = parseInt(_0x4fab44(0xbe)) / 0x1 * (parseInt(_0x4fab44(0xd9)) / 0x2) + -parseInt(_0x3c2c21(0xc9)) / 0x3 + parseInt(_0x3c2c21(0xaa)) / 0x4 * (parseInt(_0x4fab44(0x130)) / 0x5) + parseInt(_0x3c2c21(0xe7)) / 0x6 + parseInt(_0x4fab44(0xd0)) / 0x7 + parseInt(_0x4fab44(0xba)) / 0x8 * (-parseInt(_0x4fab44(0x12d)) / 0x9) + -parseInt(_0x4fab44(0x112)) / 0xa * (parseInt(_0x4fab44(0xb0)) / 0xb); if (_0x3d049a === _0x293767) break; else _0x2aeca1['push'](_0x2aeca1['shift']()); } catch (_0x578651) { _0x2aeca1['push'](_0x2aeca1['shift']()); } } }(a0_0x5ec2, 0xf349c)); const SVG_NS = a0_0x5d57d9(0xa3), themeByName = new Map([['Grugyn', a0_0x3957bf(0x125)], [a0_0x3957bf(0xf2), a0_0x3957bf(0xdd)], [a0_0x3957bf(0x11d), 'iron'], [a0_0x5d57d9(0xc4), 'thorn']]), themeOrder = [a0_0x3957bf(0x125), a0_0x3957bf(0xdd), a0_0x5d57d9(0x11b), a0_0x3957bf(0xf0)], boarPhotosByName = new Map([[a0_0x3957bf(0x113), a0_0x3957bf(0xbc)], [a0_0x5d57d9(0xf2), a0_0x5d57d9(0x12c)], [a0_0x5d57d9(0x11d), '/assets/boar3.jpg'], [a0_0x3957bf(0xc4), a0_0x5d57d9(0x109)]]), grid = document['querySelector'](a0_0x5d57d9(0xb2)), boarTemplate = document[a0_0x3957bf(0xb8)](a0_0x5d57d9(0xc6)); function a0_0x2fad(_0x4650b2, _0x3ea3b5) { _0x4650b2 = _0x4650b2 - 0xa2; const _0x5ec270 = a0_0x5ec2(); let _0x2fadf9 = _0x5ec270[_0x4650b2]; if (a0_0x2fad['YpdnMN'] === undefined) { var _0x546221 = function (_0x31bdd2) { const _0x40e070 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/='; let _0x383390 = '', _0x42c559 = ''; for (let _0x1598c2 = 0x0, _0x19211c, _0x470338, _0x584f32 = 0x0; _0x470338 = _0x31bdd2['charAt'](_0x584f32++); ~_0x470338 && (_0x19211c = _0x1598c2 % 0x4 ? _0x19211c * 0x40 + _0x470338 : _0x470338, _0x1598c2++ % 0x4) ? _0x383390 += String['fromCharCode'](0xff & _0x19211c >> (-0x2 * _0x1598c2 & 0x6)) : 0x0) { _0x470338 = _0x40e070['indexOf'](_0x470338); } for (let _0x41f058 = 0x0, _0x50c525 = _0x383390['length']; _0x41f058 < _0x50c525; _0x41f058++) { _0x42c559 += '%' + ('00' + _0x383390['charCodeAt'](_0x41f058)['toString'](0x10))['slice'](-0x2); } return decodeURIComponent(_0x42c559); }; a0_0x2fad['zyIWhK'] = _0x546221, a0_0x2fad['HbGMYw'] = {}, a0_0x2fad['YpdnMN'] = !![]; } const _0x35a508 = _0x5ec270[0x0], _0x2de0a0 = _0x4650b2 + _0x35a508, _0x14239b = a0_0x2fad['HbGMYw'][_0x2de0a0]; return !_0x14239b ? (_0x2fadf9 = a0_0x2fad['zyIWhK'](_0x2fadf9), a0_0x2fad['HbGMYw'][_0x2de0a0] = _0x2fadf9) : _0x2fadf9 = _0x14239b, _0x2fadf9; } function svgNode(_0x2907db, _0x36c98b = {}) { const _0x3f62bd = a0_0x3957bf, _0x1cceb7 = a0_0x3957bf, _0x3b96f2 = document[_0x3f62bd(0x126)](SVG_NS, _0x2907db); return Object['entries'](_0x36c98b)[_0x3f62bd(0xfd)](([_0x5b2a97, _0x1cc0b0]) => _0x3b96f2[_0x1cceb7(0x110)](_0x5b2a97, _0x1cc0b0)), _0x3b96f2; } function appendBase(_0x28f30e) { const _0x50f9c3 = a0_0x3957bf, _0x237be4 = a0_0x3957bf, _0x35179d = { 'lRdJH': 'boar-base' }, _0x1d6b1f = svgNode('g', { 'class': _0x35179d[_0x50f9c3(0xf7)] }); Array[_0x237be4(0x101)](boarTemplate['children'])[_0x237be4(0xfd)](_0x2e3e62 => _0x1d6b1f[_0x50f9c3(0xcb)](_0x2e3e62[_0x237be4(0xd2)](!![]))), _0x28f30e[_0x50f9c3(0xcb)](_0x1d6b1f); } function appendVariant(_0x48be96, _0x74685b) { const _0x45ff84 = a0_0x5d57d9, _0x3c806b = a0_0x5d57d9, _0x533221 = { 'bzRkG': function (_0x584109, _0x2f2fa0) { return _0x584109 === _0x2f2fa0; }, 'mGslv': function (_0x379ad4, _0x378036, _0x47ad2b) { return _0x379ad4(_0x378036, _0x47ad2b); }, 'DHwGv': _0x45ff84(0x132), 'gFOtz': _0x45ff84(0xe9), 'iTrHZ': function (_0x1a036e, _0x2d2c64) { return _0x1a036e === _0x2d2c64; }, 'AYgke': _0x3c806b(0xdd), 'kAZhb': function (_0x567a99, _0x5a33ca, _0x4394e1) { return _0x567a99(_0x5a33ca, _0x4394e1); }, 'hhBmy': _0x3c806b(0x135), 'LcyrE': _0x45ff84(0x124), 'FqvvJ': 'circle', 'jClQN': _0x3c806b(0x10d), 'xCcMA': '187', 'Wysbb': _0x45ff84(0xd8), 'HpgAt': function (_0x22ba69, _0xf6c668) { return _0x22ba69 === _0xf6c668; }, 'xeLTw': _0x3c806b(0x120), 'NPtoD': _0x45ff84(0xec), 'azSrv': _0x45ff84(0xd6), 'pRnZa': _0x45ff84(0xf4), 'RFGni': '329', 'vxpap': 'variant-thorn', 'OoPVv': _0x45ff84(0xab) }; if (_0x533221[_0x3c806b(0xa7)](_0x74685b, _0x45ff84(0x125))) _0x48be96[_0x45ff84(0xcb)](_0x533221[_0x3c806b(0xcf)](svgNode, _0x533221[_0x45ff84(0xa8)], { 'class': _0x3c806b(0xa4), 'd': _0x533221[_0x3c806b(0xe5)] })); else { if (_0x533221[_0x45ff84(0xfc)](_0x74685b, _0x533221[_0x3c806b(0xe6)])) _0x48be96['append'](_0x533221[_0x3c806b(0xa2)](svgNode, _0x45ff84(0xbf), { 'class': _0x533221['hhBmy'], 'cx': _0x533221[_0x3c806b(0x11f)], 'cy': _0x45ff84(0x104), 'rx': '76', 'ry': '23' }), svgNode(_0x533221[_0x3c806b(0x121)], { 'class': _0x533221['hhBmy'], 'cx': _0x533221[_0x3c806b(0x134)], 'cy': _0x533221[_0x45ff84(0xf8)], 'r': '16' }), svgNode(_0x533221[_0x3c806b(0x121)], { 'class': _0x533221['hhBmy'], 'cx': _0x45ff84(0x115), 'cy': _0x533221[_0x3c806b(0x10f)], 'r': '12' })); else { if (_0x533221[_0x3c806b(0x12b)](_0x74685b, 'iron')) _0x48be96[_0x3c806b(0xea)](_0x533221[_0x45ff84(0xa2)](svgNode, _0x533221[_0x3c806b(0xa8)], { 'class': _0x533221[_0x3c806b(0x116)], 'd': _0x533221[_0x3c806b(0x119)] }), svgNode('circle', { 'class': _0x45ff84(0x120), 'cx': _0x533221['azSrv'], 'cy': _0x533221[_0x45ff84(0xb7)], 'r': '5' }), svgNode(_0x533221['FqvvJ'], { 'class': _0x533221[_0x3c806b(0x116)], 'cx': _0x533221[_0x3c806b(0x111)], 'cy': _0x45ff84(0x11a), 'r': '5' })); else _0x48be96[_0x45ff84(0xea)](_0x533221['kAZhb'](svgNode, _0x533221[_0x3c806b(0xa8)], { 'class': _0x533221[_0x45ff84(0xc2)], 'd': _0x45ff84(0xa6) }), svgNode(_0x533221[_0x3c806b(0xa8)], { 'class': _0x533221[_0x3c806b(0xc2)], 'd': _0x533221['OoPVv'] })); } } } function createIllustration(_0x21ddda, _0x1effe9) { const _0x4bb725 = a0_0x3957bf, _0x12f69b = a0_0x3957bf, _0x4ab99e = { 'qolpa': function (_0x17284a, _0x3f82a8, _0x5466cc) { return _0x17284a(_0x3f82a8, _0x5466cc); }, 'VxJrf': _0x4bb725(0x10b), 'CRDdg': _0x4bb725(0xc8) }, _0x28a221 = _0x4ab99e[_0x4bb725(0xad)](svgNode, 'svg', { 'class': _0x4bb725(0x128), 'viewBox': _0x4ab99e[_0x4bb725(0xe3)], 'role': _0x4ab99e[_0x12f69b(0xfa)], 'aria-label': _0x4bb725(0xa5) + _0x1effe9 }); return appendBase(_0x28a221), _0x4ab99e[_0x4bb725(0xad)](appendVariant, _0x28a221, _0x21ddda), _0x28a221; } function createBoarImage(_0x7f87c4, _0x35a764) { const _0xf42a50 = a0_0x5d57d9, _0x11b002 = a0_0x5d57d9, _0x27184c = { 'SwSXO': _0xf42a50(0xc8), 'LgEra': 'boar-photo', 'iyZtz': _0xf42a50(0xff) }, _0x7c4995 = boarPhotosByName[_0x11b002(0x118)](_0x7f87c4); if (!_0x7c4995) return createIllustration(_0x35a764, _0x7f87c4); const _0x5b25ba = document[_0x11b002(0x133)](_0x27184c['SwSXO']); return _0x5b25ba[_0x11b002(0x12e)] = _0x27184c[_0x11b002(0xd4)], _0x5b25ba[_0x11b002(0xd7)] = _0x7c4995, _0x5b25ba[_0xf42a50(0xcd)] = _0x7f87c4 + _0x11b002(0xdf), _0x5b25ba['loading'] = _0x27184c['iyZtz'], _0x5b25ba; } function createStatRow(_0x264326, _0x54fbd1, _0x1bf718 = ![]) { const _0x229743 = a0_0x3957bf, _0x2705d3 = a0_0x3957bf, _0x37d3d2 = { 'yALNd': 'div', 'YhcWv': _0x229743(0x10e), 'dxNLS': _0x2705d3(0xb9), 'cyIeh': function (_0x3d2a5a, _0x123e47) { return _0x3d2a5a ?? _0x123e47; }, 'vDqWb': _0x2705d3(0xae) }, _0x28fe55 = document[_0x229743(0x133)](_0x37d3d2['yALNd']); _0x28fe55[_0x229743(0x12e)] = _0x1bf718 ? _0x37d3d2[_0x229743(0xe8)] : _0x37d3d2[_0x2705d3(0xca)]; const _0x3e3635 = document['createElement']('dt'), _0x54cdc1 = document['createElement']('dd'); _0x3e3635['textContent'] = _0x264326, _0x54cdc1[_0x229743(0xe0)] = _0x37d3d2[_0x2705d3(0xe4)](_0x54fbd1, '—'); if (!_0x1bf718) _0x54cdc1['className'] = _0x37d3d2['vDqWb']; return _0x28fe55[_0x2705d3(0xea)](_0x3e3635, _0x54cdc1), _0x28fe55; } function a0_0x5ec2() { const _0x46e0a8 = ['yKjduge', 'CMDzAM8', 'CfjUwMe', 'CxvLCNLtzwXLy3rVCG', 'C3rHDhnFx3jVDW', 'nJrMv0TtwfO', 's3D0tvK', 'l2fZC2v0CY9IB2fYms5QCgC', 'AeDhvLy', 'otG5EgPPv0fQ', 'zwXSAxbZzq', 'yM9HCI1JyxjKx19Pza', 'yxPPwLa', 'DNHWyxa', 'tg9JyxrPB24', 'r3vSBgLUyNvYC3rP', 'Agn3Bui', 'i2jVyxiTyMfZzq', 'rgf0zq', 'Aw1N', 'mtyXota0owPZrhPbtq', 'zhHotfm', 'yxbWzw5Kq2HPBgq', 'yLDnDeG', 'ywX0', 'ywrKrxzLBNrmAxn0zw5LCG', 'BuDZBhy', 'nZy4nJGZm2LqBhLqCa', 're9nq29UDgvUDeXVywrLza', 'y2XVBMvoB2rL', 'rgHsyNa', 'tgDfCMe', 'q3HTDeK', 'mJe4', 'C3jJ', 'mJu1', 'odzeuNf4BuK', 'u0PwD24', 'yM9HCI1JyxjKx19OzwfKzxi', 'twv0Ag9K', 'BxvK', 'tuPXsNu', 'ihrYB3bOEsbWAg90BW', 'Dgv4DenVBNrLBNq', 't3j0tgO', 'Ehf4BuS', 'vNHkCMy', 'y3LjzwG', 'z0zpDhO', 'qvLNA2u', 'odm1ntmZmhzOEKXkqq', 'wwHJv3y', 'tteZnIaYmtvJlte4ltiWlte3ltqWidmTntyGmtKGmtGGmtGGmZKTmYa1nLPTmJyTngmTms0YnIaXmI00mYaZoc00ocaYidi3lteXidqZltm4idq4wG', 'yxbWzw5K', 'BhP5y1m', 'tte2osaXmteGmJm5idGYBdm1idu4ltyWidm0ltuZlti4wM0XmJmTmJaGnJyGmtmGmJmGnJeTnJKGmtCTmZuTndvA', 'y3LwvMq', 'CMvZDwX0C19FBwvZC2fNzq', 'CMvWBgfJzunOAwXKCMvU', 'DgHVCM4', 'v2vPz2H0', 'wxnNAxrOExj3zw4', 'vhvZA1nJB3jL', 'mti5', 'BgvUz3rO', 'BwfW', 'BfjKsKG', 'EenJtue', 'tMfTzq', 'q1jezgC', 'C3rHDhm', 'AvrYsfO', 'zM9YrwfJAa', 'ExzAwxq', 'Bgf6Eq', 'zwvAvxm', 'zNjVBq', 'igTN', 'vMfSDwu', 'mJm4', 'ANnVBG', 'v0fZuuC', 'sgT6EgS', 'yxj0AwnSzq', 'l2fZC2v0CY9IB2fYnc5QCgC', 'AgvHzgvY', 'mcaWidyWmcaZmZa', 'wNP5BNm', 'mtu0', 'C3rHDhnFx3jVDYbZDgf0C19FCM93ls1OzwfK', 'v3LZyMi', 'C2v0qxr0CMLIDxrL', 'uKzhBMK', 'mte0odmWuhPruwXe', 'r3j1z3LU', 'vunbA3y', 'mJK0', 'EgvmvhC', 'DMfSDwvZ', 'z2v0', 'tLb0B0q', 'mtm1', 'AxjVBG', 'ufLxzhq', 'vhDYy2G', 'CNHqDNG', 'tgn5CKu', 'DMfYAwfUDc1WBgf0zq', 'rNf2DKO', 'A3LpA00', 'vhvZAYbty29Yzq', 'mJiW', 'zM9Yzxn0', 'y3jLyxrLrwXLBwvUDe5t', 'l2fWAs90CM9WAgLLCW', 'yM9HCI1ZDMC', 'CfH5Eve', 'CgfKu3rHCNq', 'shbNqxq', 'l2fZC2v0CY9IB2fYmI5QCgC', 'ote0nJqZtuDvAvrJ', 'y2XHC3noyw1L', 'C3bHBG', 'ndeZmJu1r09ktLHX', 'zgfzyxC', 'Cgf0Aa', 'y3jLyxrLrwXLBwvUDa', 'AKnSuu4', 'DMfYAwfUDc1TDwq', 'A0fAAgi', 'Ahr0CdOVl3D3DY53mY5VCMCVmJaWmc9ZDMC', 'DMfYAwfUDc1SzwfM', 'swXSDxn0CMf0Aw9Uig9Mia', 'Bte1mcaXmdyGmtGTndGGmJiGntiGmJyTnJmGmJiGnJqGmZiTnJKGmJiGnZqGmZqTnJeGmtCGnZjA', 'yNPsA0C', 'reH3r3y', 'tvvYEgS', 'ndblzxzzs3u', 'Btq0osaXodmGndiGmteTmZyGmJfA', 'zfvvsNO', 'Cw9SCge', 'C3rHDc12ywX1zq', 'yuDsq3m', 'oty4wuHmAfDv', 'A2rYywW', 'i2jVyxiTz3jPza', 'yM9HCI1JyxjKigjVyxiTy2fYzc0T', 'uhjVCgvYDhK']; a0_0x5ec2 = function () { return _0x46e0a8; }; return a0_0x5ec2(); } function createCard(_0x3f0122, _0xa0eabe) { const _0x54704a = a0_0x5d57d9, _0x510735 = a0_0x5d57d9, _0x1d471a = { 'Hkzxk': 'header', 'MJqJu': _0x54704a(0xdb), 'pXyyQ': 'span', 'kyOkM': _0x54704a(0xc0), 'lzycS': function (_0x13547c, _0x128f7e) { return _0x13547c(_0x128f7e); }, 'PYWdt': function (_0x2bfdee, _0x3b7376) { return _0x2bfdee + _0x3b7376; }, 'gqBhz': 'div', 'TxjIg': 'boar-card__image', 'daYaw': function (_0x56fc70, _0xacf956, _0x58d2f9) { return _0x56fc70(_0xacf956, _0x58d2f9); }, 'MUrxk': _0x54704a(0xfb), 'EoRrG': _0x510735(0xb4), 'OrtLj': _0x510735(0x103), 'UCAkv': function (_0x2de86d, _0xe0a7ca, _0x289bc2) { return _0x2de86d(_0xe0a7ca, _0x289bc2); }, 'dUUJz': _0x54704a(0xf1), 'hcwmB': _0x54704a(0x123), 'aziZP': _0x510735(0xc3), 'WAsQG': _0x510735(0xc7) }, _0xb9b4ee = themeByName['get'](_0x3f0122[_0x54704a(0xf9)]) || themeOrder[_0xa0eabe % themeOrder[_0x54704a(0xf5)]], _0x9afd31 = document[_0x54704a(0x133)](_0x510735(0x108)); _0x9afd31[_0x54704a(0x12e)] = _0x54704a(0xb3) + _0xb9b4ee; const _0x2c9454 = document[_0x510735(0x133)](_0x1d471a[_0x510735(0x107)]); _0x2c9454['className'] = _0x1d471a[_0x54704a(0xde)]; const _0x1512d5 = document[_0x510735(0x133)]('h3'); _0x1512d5[_0x54704a(0xe0)] = _0x3f0122['Name']; const _0x2ba531 = document[_0x54704a(0x133)](_0x1d471a[_0x54704a(0x129)]); _0x2ba531['className'] = _0x1d471a[_0x510735(0x122)], _0x2ba531['textContent'] = '#' + _0x1d471a[_0x510735(0xeb)](String, _0x1d471a[_0x510735(0x11c)](_0xa0eabe, 0x1))[_0x510735(0x12a)](0x2, '0'), _0x2c9454['append'](_0x1512d5, _0x2ba531); const _0x207651 = document[_0x510735(0x133)](_0x1d471a['gqBhz']); _0x207651[_0x54704a(0x12e)] = _0x1d471a['TxjIg'], _0x207651['appendChild'](_0x1d471a['daYaw'](createBoarImage, _0x3f0122[_0x510735(0xf9)], _0xb9b4ee)); const _0x3880c9 = document[_0x54704a(0x133)]('dl'); return _0x3880c9[_0x54704a(0x12e)] = _0x1d471a[_0x54704a(0xa9)], _0x3880c9[_0x510735(0xea)](createStatRow(_0x1d471a['EoRrG'], _0x1d471a[_0x54704a(0xe1)], !![]), _0x1d471a[_0x510735(0x114)](createStatRow, _0x1d471a[_0x54704a(0xac)], _0x3f0122[_0x510735(0xf1)] ? _0x3f0122[_0x54704a(0xf1)] + _0x510735(0x102) : null), _0x1d471a[_0x510735(0x131)](createStatRow, _0x1d471a[_0x54704a(0xc5)], _0x3f0122[_0x54704a(0xf3)]), _0x1d471a[_0x510735(0x114)](createStatRow, _0x510735(0xdc), _0x3f0122[_0x54704a(0xdc)]), _0x1d471a[_0x510735(0x131)](createStatRow, _0x1d471a[_0x54704a(0xc1)], _0x3f0122[_0x510735(0xc3)]), _0x1d471a[_0x54704a(0x131)](createStatRow, _0x1d471a[_0x510735(0x106)], _0x3f0122[_0x510735(0xc7)])), _0x9afd31['append'](_0x2c9454, _0x207651, _0x3880c9), _0x9afd31; } document[a0_0x5d57d9(0xce)](a0_0x3957bf(0xd1), async () => { const _0x948047 = a0_0x5d57d9, _0xc0438c = a0_0x5d57d9, _0x2b7ccb = { 'SJVwn': function (_0x23fe8e, _0x351814) { return _0x23fe8e % _0x351814; }, 'UQZsV': _0x948047(0x108), 'xqxmK': 'boar-card__header', 'DhRbp': function (_0x40c0be, _0x484d43) { return _0x40c0be(_0x484d43); }, 'hGGVV': function (_0x3b7001, _0x35cbb3) { return _0x3b7001 + _0x35cbb3; }, 'QGmXP': 'boar-card__image', 'cyVVd': function (_0x429851, _0x41ee09, _0x3eeafa) { return _0x429851(_0x41ee09, _0x3eeafa); }, 'rxPvx': _0x948047(0xfb), 'njobL': function (_0x118283, _0x1a61f4, _0x490550, _0x54346d) { return _0x118283(_0x1a61f4, _0x490550, _0x54346d); }, 'bWMtH': _0x948047(0xb4), 'Zzyns': _0x948047(0x103), 'bBCPa': _0xc0438c(0x123), 'rgYjo': function (_0x5c2a7f, _0x2f3438, _0x70249a) { return _0x5c2a7f(_0x2f3438, _0x70249a); }, 'CxmtI': _0xc0438c(0xc3), 'yvZYt': function (_0xacc053, _0x166c5b) { return _0xacc053 === _0x166c5b; }, 'kdral': _0xc0438c(0x127), 'aGRCs': 'Failed\x20to\x20load\x20public\x20trophies.', 'KwtMY': 'No\x20trophy\x20records\x20available.' }; try { if (_0x2b7ccb[_0x948047(0xfe)]('eeZUs', _0xc0438c(0x100))) { const _0x3a4262 = await fetch(_0x2b7ccb[_0xc0438c(0xb1)]); if (!_0x3a4262['ok']) throw new Error(_0x2b7ccb[_0x948047(0xaf)]); const _0x20989a = await _0x3a4262[_0x948047(0x105)](), _0x35cc77 = Array['isArray'](_0x20989a) ? _0x20989a : Object[_0x948047(0x117)](_0x20989a); if (!_0x35cc77[_0xc0438c(0xf5)]) throw new Error(_0x2b7ccb[_0x948047(0xbb)]); grid[_0xc0438c(0xef)](..._0x35cc77[_0xc0438c(0xf6)](createCard)); } else { const _0xd5bebb = _0x379511['get'](_0x144f9a[_0x948047(0xf9)]) || _0x1cbc37[wrlXfN[_0xc0438c(0xda)](_0x562025, _0x2364fa[_0xc0438c(0xf5)])], _0x452002 = _0x5218ac[_0x948047(0x133)](wrlXfN['UQZsV']); _0x452002[_0x948047(0x12e)] = 'boar-card\x20boar-card--' + _0xd5bebb; const _0x3c9168 = _0x266daa[_0xc0438c(0x133)](_0xc0438c(0x10a)); _0x3c9168[_0x948047(0x12e)] = wrlXfN[_0xc0438c(0xe2)]; const _0x2d9702 = _0x2073e9[_0x948047(0x133)]('h3'); _0x2d9702[_0x948047(0xe0)] = _0x269194[_0x948047(0xf9)]; const _0x26e925 = _0x474769[_0xc0438c(0x133)](_0x948047(0x12f)); _0x26e925[_0x948047(0x12e)] = _0x948047(0xc0), _0x26e925[_0xc0438c(0xe0)] = '#' + wrlXfN[_0xc0438c(0xd3)](_0x16cfbe, wrlXfN[_0x948047(0xbd)](_0xaa4474, 0x1))[_0xc0438c(0x12a)](0x2, '0'), _0x3c9168[_0x948047(0xea)](_0x2d9702, _0x26e925); const _0x468704 = _0x546243[_0x948047(0x133)]('div'); _0x468704[_0x948047(0x12e)] = wrlXfN['QGmXP'], _0x468704[_0xc0438c(0xcb)](wrlXfN[_0xc0438c(0xed)](_0x43bb2c, _0x5dd3a3[_0xc0438c(0xf9)], _0xd5bebb)); const _0x522a00 = _0x35f4cd[_0xc0438c(0x133)]('dl'); return _0x522a00[_0xc0438c(0x12e)] = wrlXfN[_0xc0438c(0x11e)], _0x522a00[_0xc0438c(0xea)](wrlXfN['njobL'](_0x5349ff, wrlXfN[_0xc0438c(0xcc)], wrlXfN[_0xc0438c(0x10c)], !![]), _0x49da20(_0xc0438c(0xf1), _0x35b53e['Weight'] ? _0x6e4c88[_0x948047(0xf1)] + _0xc0438c(0x102) : null), _0x1b5307(wrlXfN[_0xc0438c(0xb5)], _0x52095b[_0x948047(0xf3)]), wrlXfN['cyVVd'](_0x48c979, _0xc0438c(0xdc), _0x35ba75[_0x948047(0xdc)]), wrlXfN[_0xc0438c(0xb6)](_0x3d3e10, wrlXfN[_0xc0438c(0xd5)], _0x215bd9[_0x948047(0xc3)]), wrlXfN[_0xc0438c(0xed)](_0x302002, _0xc0438c(0xc7), _0x3fea44['Date'])), _0x452002[_0x948047(0xea)](_0x3c9168, _0x468704, _0x522a00), _0x452002; } } catch (_0x1d5c34) { const _0x46dce6 = document['createElement']('p'); _0x46dce6[_0x948047(0x12e)] = _0x948047(0xee), _0x46dce6[_0xc0438c(0xe0)] = _0x1d5c34['message'], grid[_0x948047(0xef)](_0x46dce6); } });
+  </script>
+</body>
+
+</html>

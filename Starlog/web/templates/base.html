@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}STARLOG{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('band_tune') }}" defer></script>
+    <script src="{{ url_for('static', filename='band-ui.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-center">starlog broadcast engine</div>
+        </header>
+
+        <main class="main-content">
+            <aside class="sidebar">
+                <h2 class="section-title">broadcast list</h2>
+                <ul class="broadcast-list" id="broadcastList">
+                    {% block sidebar_list %}
+                    {% for broadcast in sidebar_broadcasts %}
+                    <li class="broadcast-item">
+                        <a href="{{ url_for('view_broadcast', id=broadcast['id']) }}">
+                            <div class="broadcast-name">{{ broadcast['title'] }}</div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% endblock %}
+                </ul>
+                <div class="sidebar-actions">
+                    <form action="{{ url_for('index') }}" method="GET">
+                        <button type="submit" class="primary-action">Create New Broadcast</button>
+                    </form>
+                </div>
+            </aside>
+
+            <section class="content">
+                <h2 class="section-title" id="contentSectionTitle">{% block section_title %}broadcast detail{% endblock %}</h2>
+                <div class="broadcast-display">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for cat, msg in messages %}
+                            <p class="report-context">{{ msg }}</p>
+                        {% endfor %}
+                    {% endwith %}
+                    {% block content %}{% endblock %}
+                    <div class="diagnostics">
+                        <span>broadcast engine ready</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <span>interface loaded</span>
+            <span>band: <strong id="band-name">loading</strong></span>
+            <span>channels: <strong id="band-channels">loading</strong></span>
+        </footer>
+    </div>
+</body>
+</html>

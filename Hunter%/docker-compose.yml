@@ -1,0 +1,12 @@
+services:
+  hunter-percent:
+    build: .
+    ports:
+      - "8000:8080"
+    environment:
+      FLAG: "${FLAG:-CSUFSEC{2f1d2d60-44a1-47bf-95f4-38e2536ca49c}}"
+      DEBUG_TOKEN: "${DEBUG_TOKEN:-caput-apri-defero}"
+      DECOY_TYPE_COUNT: "${DECOY_TYPE_COUNT:-50000}"
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped

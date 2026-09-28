@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a13">
+  <title>Hunter% — Submit a Sighting</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #172018;
+      --muted: #687269;
+      --paper: #fffdf8;
+      --paper-soft: #f2f0e8;
+      --forest: #183c2a;
+      --forest-bright: #276343;
+      --moss: #b9d39f;
+      --line: rgba(23, 32, 24, 0.16);
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: #f6f2e8;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(91, 126, 80, 0.18), transparent 26rem),
+        radial-gradient(circle at 82% 22%, rgba(129, 83, 48, 0.13), transparent 24rem),
+        #101a13;
+      font-family: var(--sans);
+    }
+
+    .site-shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav-link--secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 120px;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 4px;
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 160ms ease, opacity 160ms ease;
+      background: rgba(255, 255, 255, 0.05);
+      color: #dce9ca;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link--secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .boars-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 120px;
+      min-height: 40px;
+      padding: 0 16px;
+      border: 1px solid #bfd1af;
+      border-radius: 4px;
+      color: #162117;
+      background: #dce9ca;
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: normal;
+      text-transform: none;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 160ms ease, opacity 160ms ease;
+    }
+
+    .boars-button:hover {
+      background: #ecf5dc;
+      color: #162117;
+      transform: translateY(-2px);
+    }
+
+    .boars-button:disabled {
+      cursor: wait;
+      opacity: 0.72;
+      transform: none;
+    }
+
+    .sighting-section {
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(23, 32, 24, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 32, 24, 0.035) 1px, transparent 1px),
+        var(--paper-soft);
+      background-size: 32px 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      min-height: calc(100vh - 80px);
+      /* Stretches the section to the bottom */
+    }
+
+    .sighting__inner {
+      max-width: 1000px;
+      padding: 60px 0 110px;
+    }
+
+    .sighting__header {
+      display: flex;
+      align-items: fill;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 38px;
+    }
+
+    .sighting__kicker {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .sighting-card {
+      background: var(--paper);
+      border: 1px solid rgba(23, 32, 24, 0.25);
+      box-shadow: 10px 10px 0 rgba(24, 60, 42, 0.12);
+      padding: 36px;
+      max-width: 680px;
+    }
+
+    .sighting-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .form-group label {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group input {
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      background: #fbfaf6;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      border-radius: 4px;
+    }
+
+    .form-group input:focus {
+      outline: 2px solid var(--forest-bright);
+    }
+
+    .preview-output {
+      margin-top: 24px;
+      padding: 18px;
+      background: var(--ink);
+      color: var(--moss);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+
+    .preview-output[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 780px) {
+      .site-shell {
+        width: min(100% - 24px, 590px);
+      }
+
+      .sighting__inner {
+        padding: 40px 0 82px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div style="padding: 20px 0;" class="site-shell">
+    <a href="/" class="nav-link--secondary">← Back</a>
+  </div>
+
+  <section class="sighting-section">
+    <div class="sighting__inner site-shell">
+      <div class="sighting__header">
+        <div>
+          <h2 class="sighting__kicker">Submit a Sighting</h2>
+        </div>
+      </div>
+      <div class="sighting-card">
+        <form class="sighting-form" id="sighting-form">
+          <div class="form-group">
+            <label for="photo-url">Photo URL</label>
+            <input type="url" id="photo-url" name="imageUrl" placeholder="https://example.com/boar.jpg" required>
+          </div>
+          <button type="submit" class="boars-button" style="margin: 0; width: 100%;">Preview</button>
+        </form>
+        <pre class="preview-output" id="preview-output" hidden></pre>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function a0_0x2c78() { const _0x38f75e = ['i3nPz2H0Aw5NlwzVCM0', 'nJa2odq3me5pyunyra', 'B2jQzwn0', 'l3bYzxzPzxC', 'i3bYzxzPzxCTB3v0Chv0', 'ChjLDMvUDerLzMf1Bhq', 'i3bOB3rVlxvYBa', 'vwHrBfu', 'yxbWBgLJyxrPB24VANnVBG', 'vxfOD0K', 'nMD5qLzLqW', 'AgLKzgvU', 'nJC1t2T2Ew9L', 'ANnVBG', 'ue9tva', 'CxvLCNLtzwXLy3rVCG', 'zgLZywjSzwq', 'mJy0ode3D2PXDLnh', 'yNv0Dg9U', 'nJqYmdi0mgPZDNLeDW', 'AMPcA2K', 'ywrKrxzLBNrmAxn0zw5LCG', 'ndmYnZe3m3HsyNvWqW', 'nJG0mtm2mhjgs0zyzW', 'ndb3uhrktxe', 'rxjYB3iGBg9HzgLUzYbWCMv2Awv3lG', 'Dgv4DenVBNrLBNq', 'rgDNC3O', 'C3rYAw5NAwz5', 'DMfSDwu', 'rMv0y2HPBMCUlI4', 'C3vIBwL0', 'mZyWmZm5vgn4rvvN', 'mZKZmJKWvhvrtMDq']; a0_0x2c78 = function () { return _0x38f75e; }; return a0_0x2c78(); } const a0_0x478096 = a0_0x1305, a0_0x17c2f7 = a0_0x1305; function a0_0x1305(_0x518f69, _0x2f2b59) { _0x518f69 = _0x518f69 - 0x153; const _0x2c7857 = a0_0x2c78(); let _0x1305c3 = _0x2c7857[_0x518f69]; if (a0_0x1305['XGEGXd'] === undefined) { var _0x985252 = function (_0x5620f4) { const _0x4438f5 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/='; let _0x288217 = '', _0x1e9662 = ''; for (let _0x377c82 = 0x0, _0x533049, _0x1697e6, _0xda5cea = 0x0; _0x1697e6 = _0x5620f4['charAt'](_0xda5cea++); ~_0x1697e6 && (_0x533049 = _0x377c82 % 0x4 ? _0x533049 * 0x40 + _0x1697e6 : _0x1697e6, _0x377c82++ % 0x4) ? _0x288217 += String['fromCharCode'](0xff & _0x533049 >> (-0x2 * _0x377c82 & 0x6)) : 0x0) { _0x1697e6 = _0x4438f5['indexOf'](_0x1697e6); } for (let _0x29537e = 0x0, _0x59d02f = _0x288217['length']; _0x29537e < _0x59d02f; _0x29537e++) { _0x1e9662 += '%' + ('00' + _0x288217['charCodeAt'](_0x29537e)['toString'](0x10))['slice'](-0x2); } return decodeURIComponent(_0x1e9662); }; a0_0x1305['joQhAb'] = _0x985252, a0_0x1305['mpKzJC'] = {}, a0_0x1305['XGEGXd'] = !![]; } const _0x4ae05d = _0x2c7857[0x0], _0x2bd3bb = _0x518f69 + _0x4ae05d, _0x37a6d9 = a0_0x1305['mpKzJC'][_0x2bd3bb]; return !_0x37a6d9 ? (_0x1305c3 = a0_0x1305['joQhAb'](_0x1305c3), a0_0x1305['mpKzJC'][_0x2bd3bb] = _0x1305c3) : _0x1305c3 = _0x37a6d9, _0x1305c3; } (function (_0x2049c5, _0x438702) { const _0x3ff717 = a0_0x1305, _0x19875d = a0_0x1305, _0x543c4e = _0x2049c5(); while (!![]) { try { const _0x269b27 = parseInt(_0x3ff717(0x166)) / 0x1 * (parseInt(_0x3ff717(0x172)) / 0x2) + -parseInt(_0x19875d(0x15c)) / 0x3 + -parseInt(_0x19875d(0x15d)) / 0x4 + -parseInt(_0x19875d(0x169)) / 0x5 + parseInt(_0x19875d(0x159)) / 0x6 + -parseInt(_0x19875d(0x157)) / 0x7 * (-parseInt(_0x3ff717(0x15e)) / 0x8) + parseInt(_0x19875d(0x174)) / 0x9 * (parseInt(_0x3ff717(0x167)) / 0xa); if (_0x269b27 === _0x438702) break; else _0x543c4e['push'](_0x543c4e['shift']()); } catch (_0x3c62a4) { _0x543c4e['push'](_0x543c4e['shift']()); } } }(a0_0x2c78, 0xe1746)); const sightingForm = document[a0_0x478096(0x155)](a0_0x17c2f7(0x168)), previewOutput = document[a0_0x478096(0x155)](a0_0x17c2f7(0x16c)); sightingForm[a0_0x17c2f7(0x15b)](a0_0x17c2f7(0x165), async _0x3ab921 => { const _0x3fdadd = a0_0x17c2f7, _0x13572c = a0_0x17c2f7, _0x147504 = { 'UqhwI': _0x3fdadd(0x16e), 'Dggsz': function (_0xc0a84b, _0x4de048, _0x428a73) { return _0xc0a84b(_0x4de048, _0x428a73); }, 'jjBki': _0x3fdadd(0x154), 'piCpM': _0x13572c(0x170), 'aQhIq': function (_0x18efff, _0x4efe73) { return _0x18efff === _0x4efe73; }, 'UhQlU': _0x13572c(0x15f) }; _0x3ab921[_0x3fdadd(0x16d)](); const _0x5c014a = document[_0x3fdadd(0x155)](_0x147504[_0x13572c(0x171)])[_0x13572c(0x163)], _0x25f54f = sightingForm[_0x3fdadd(0x155)](_0x3fdadd(0x158)); _0x25f54f[_0x3fdadd(0x156)] = !![], _0x25f54f[_0x3fdadd(0x160)] = _0x3fdadd(0x164), previewOutput[_0x13572c(0x173)] = !![]; try { const _0x53359f = await _0x147504[_0x3fdadd(0x161)](fetch, _0x13572c(0x16b), { 'method': _0x147504[_0x13572c(0x15a)], 'headers': { 'Content-Type': _0x147504['piCpM'] }, 'body': JSON['stringify']({ 'imageUrl': _0x5c014a }) }), _0x571572 = await _0x53359f[_0x3fdadd(0x153)](); previewOutput[_0x3fdadd(0x160)] = _0x147504['aQhIq'](typeof _0x571572, _0x3fdadd(0x16a)) ? JSON[_0x13572c(0x162)](_0x571572, null, 0x2) : _0x571572; } catch (_0x15c378) { previewOutput['textContent'] = _0x147504[_0x3fdadd(0x16f)]; } finally { previewOutput[_0x3fdadd(0x173)] = ![], _0x25f54f['disabled'] = ![], _0x25f54f['textContent'] = 'Preview'; } });
+  </script>
+</body>
+
+</html>

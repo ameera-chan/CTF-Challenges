@@ -1,0 +1,127 @@
+// Example Calldata: 0x1db05a880000000000000000000000000000000000000000000000000000000000000001
+// First 4 bytes of calldata is function selector: 0x1db05a88
+
+
+// Interfaces
+#define function enter(bytes32,uint8,bytes32,bytes32) payable returns ()
+#define function isSolved() view returns (bool)
+
+// calldata -> msg.data
+// callvalue -> msg.value
+// caller -> msg.sender
+
+#define macro CHECKVALUE() = takes (0) returns (1) {
+    callvalue               // [msg.value, function_selector]   
+    iszero                  // [true/false, function selector]
+    error jumpi             // if true jump to error, else continue
+
+    0x00 dup1 dup1 dup1     // [0x00, 0x00, 0x00, 0x00, function selector]
+    callvalue 0x02 mul      // [2 * msg.value, 0x00, 0x00, 0x00, 0x00, function selector]
+    caller gas              // [gas, msg.sender, 2 * msg.value, 0x00, 0x00, 0x00, 0x00, function selector]
+    call                    // [call_result, function selector]
+
+    end jump                // jump to end
+
+    error: 
+        0x00 0x00 revert
+
+    end:
+}
+
+#define macro CHECKPASS() = takes (0) returns (1) {
+    0x80 0x04 0x00 calldatacopy // [0x00, 0x04, 0x80, call_result, function selector]
+    // copy the calldata to memory starting at 0x00 at position 0x04 (4th byte skips the function selector)
+    // 0x80 - copy 128 bytes of calldata to memory
+    0x20 0x80 dup1              // [0x80, 0x80, 0x20, call_result, function selector]
+    0x00 0x01                   // [0x01, 0x00, 0x80, 0x80, 0x20, call_result, function selector]
+    // 0x01 = ecrecover
+    gas                         // [gas, 0x01, 0x00, 0x80, 0x80, 0x20, call_result, function selector]
+    staticcall                  // [staticcall_result, call_result, function selector]
+
+    iszero error jumpi          
+
+    0x80 mload                  // [mload[80], call_result, function selector]
+    0x1111111111111111111111111111111111111111  // [0x1111111111111111111111111111111111111111, mload[80], staticcall_result, call_result, function selector]
+    eq validPass jumpi          // [true/false, call_result, function selector]
+
+    end jump                    // [call_result, function selector]
+
+    validPass:                  // [0x00, call_result, function selector]
+        0x00
+        end jump
+
+    error: 
+        0x01
+        end jump            // THIS IS IF STATICALL FAILS [0x01, call_result, function selector]
+
+    end: 
+}
+
+#define macro ENTER() = takes (0) returns (0) {
+    CHECKVALUE() 
+    CHECKPASS()
+    // validPass: [0x00, call_result, function selector]
+    // Error: [call_result, function selector] - Vulnerability
+    // Staticcall Error: [0x01, call_result, function selector]
+
+    iszero
+    // validPass: [1, call_result, function selector]
+    // Error: [0, call_result, function selector]
+    iszero
+    // validPass: [0, call_result, function selector]
+    // Error: [1, call_result, function selector]
+
+    error jumpi
+
+    0x00 dup1 dup1 dup1         // [0x00, 0x00, 0x00, 0x00, call_result, function selector]
+    selfbalance caller gas      // [gas, msg.sender, selfbalance, 0x00, 0x00, 0x00, 0x00, call_result, function selector]
+    call                        // [call_result, call_result, function selector]
+
+    iszero error jumpi          // if call_result is 0, jump to error
+    
+    stop                        // [call_result, function selector] -> [] returns nothing
+
+    error:
+        0x00 0x00 revert 
+}
+
+#define macro IS_SOLVED() = takes (0) returns (0) {
+    selfbalance iszero      // [true/false]
+    0x00 mstore             // store the result in memory at position 0x00
+    0x20 0x00 return        // [result]
+}
+
+// Example Calldata: 0x1db05a880000000000000000000000000000000000000000000000000000000
+// 000000001
+
+
+// Function Dispatcher
+// Main entry point for the smart contract
+#define macro MAIN() = takes (0) returns (0) {
+    0x00              // TOP [0] BOTTOM            
+    // Take the first 32 bytes of calldata -> put it in stack
+    calldataload      // [calldata,0]
+    // 0xe0 = 224 decimal
+    0xe0              // [0xe0, calldata, 0]
+    shr               // [function_selector]
+
+    dup1                // [function_selector, function_selector]
+    __FUNC_SIG(enter)   // [enter_function_selector, function_selector, function_selector]
+    eq                  // [1/0, function_selector]
+    enter jumpi         // if it is true, then jump to enter
+    __FUNC_SIG(isSolved) eq solved jumpi // [] 
+
+    calldatasize iszero // [true/false]
+    receiveEther jumpi  // if true jump to receiveEther, else contnue
+
+    0x00 0x00 revert    // transaction cancelled
+
+    enter:
+        ENTER()
+
+    solved:
+        IS_SOLVED()
+
+    receiveEther: 
+        stop
+}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ broadcast['title'] }} - Starlog{% endblock %}
+{% block section_title %}broadcast detail{% endblock %}
+{% block content %}
+<div class="broadcast-header">
+    <span class="broadcast-title">{{ broadcast['title'] }}</span>
+</div>
+
+{% if broadcast['content'] %}
+<div class="form-stack">
+    <label for="stored-content">Stored content preview</label>
+    <textarea id="stored-content" rows="9" readonly>{{ broadcast['content'] | e }}</textarea>
+</div>
+{% else %}
+<p class="empty-state">This broadcast does not contain body content yet.</p>
+{% endif %}
+
+<div class="form-stack spaced-top">
+    <label for="public-url">Public broadcast URL</label>
+    <input id="public-url" type="text" value="{{ public_url }}" readonly>
+</div>
+
+<div class="broadcast-actions spaced-top">
+    <a href="{{ url_for('report_page', id=broadcast['id']) }}">Send To Station Bot</a>
+    <a href="{{ public_url }}">Open Shared Broadcast</a>
+</div>
+
+{% endblock %}

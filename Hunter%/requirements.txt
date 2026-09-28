@@ -1,0 +1,5 @@
+Flask==2.2.2
+graphql-core==3.2.7
+gunicorn==23.0.0
+Werkzeug<3.0.0
+
