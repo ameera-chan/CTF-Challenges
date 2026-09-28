@@ -1,6 +1,6 @@
 # CTF Challenges
 
-CTF challenges created by me :).
+CTF challenges created by me :)
 
 ## Challenges
 
